@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-# encoding: utf-8
 require 'socket'
 require_relative 'logdna/client.rb'
 require_relative 'logdna/resources.rb'
@@ -77,6 +75,28 @@ module Logdna
             @response = @@client.tobuffer(msg, opts)
             'Saved'
         end
+
+        def add(severity, msg=nil, progname=nil, &block)
+            opts = {}
+
+            opts[:level] = Resources::LOG_LEVELS[severity]
+            loggerExist?
+            optionChanged?
+
+            if msg.nil?
+              if block_given?
+                msg = yield
+              else
+                msg = progname
+                progname = nil
+              end
+            end
+
+            @response = @@client.tobuffer(msg, opts)
+
+            'Saved'
+        end
+
 
         def trace?
             loggerExist?
@@ -166,11 +186,6 @@ module Logdna
             optionChanged?
             @response = @@client.tobuffer(msg, opts)
             'Saved'
-        end
-
-        def add(*arg)
-            puts "add not supported in LogDNA logger"
-            return false
         end
 
         def unknown(msg=nil, opts={})

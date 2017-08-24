@@ -131,6 +131,8 @@ module Logdna
                     flush()
                 end
             end
+        rescue
+            $stderr.puts "#{self.class} error: #{$!.class}: #{$!}"
         end
 
         def flush()
@@ -142,7 +144,7 @@ module Logdna
                       http.request(@@request)
                     end
                     unless @firstbuff.empty?
-                        puts "Result: #{@response.body}"
+                        puts "[LogDNA] Result: #{@response.body}"
                     end
                     @currentbytesize = @secondbytesize
                     @secondbytesize = 0
@@ -155,6 +157,8 @@ module Logdna
                     end
                 }
             end
+        rescue
+            $stderr.puts "#{self.class} error: #{$!.class}: #{$!}"
         end
 
         def exitout()
